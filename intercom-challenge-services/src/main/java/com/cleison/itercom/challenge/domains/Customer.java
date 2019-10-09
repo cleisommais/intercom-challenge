@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(staticName = "of")
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Data
 public class Customer {
@@ -13,4 +12,6 @@ public class Customer {
     private Integer userId;
     private Double latitude;
     private Double longitude;
+    public Customer() {      
+    }
 }
