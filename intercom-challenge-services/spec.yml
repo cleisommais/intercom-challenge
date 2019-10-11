@@ -1,0 +1,47 @@
+openapi: 3.0.1
+info:
+  title: Specification Envite Customers
+  description: 'Specification to consume the API to envite any customers within 100km of Dublin office'
+  contact:
+    email: cleisommais@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+paths:
+  /invite:
+    get:
+      summary: Get all Customers possibles within 100km of Dublin office    
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        500:
+          description: Server error
+          content: {}   
+      security:
+      - api_key: []                       
+components:
+  schemas:
+    Customers:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        name:
+          type: string
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: http://oauth0.com
+          tokenUrl: http://oauth0.com
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
