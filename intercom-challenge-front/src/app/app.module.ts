@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {CustomersComponent} from './customers/customers.component';
@@ -14,6 +14,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -22,9 +24,12 @@ import {MatTableModule} from '@angular/material/table';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     HttpClientModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
+    MatInputModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -32,6 +37,7 @@ import {MatTableModule} from '@angular/material/table';
     MatIconModule,
     MatButtonModule,
     MatCardModule,
+    MatFormFieldModule,
     MatSnackBarModule,
   ],
   providers: [],
