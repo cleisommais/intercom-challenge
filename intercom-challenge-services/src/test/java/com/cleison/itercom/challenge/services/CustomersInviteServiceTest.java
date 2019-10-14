@@ -1,42 +1,97 @@
 package com.cleison.itercom.challenge.services;
 
 import com.cleison.itercom.challenge.domains.Customer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import com.cleison.itercom.challenge.exeptions.LogicExeption;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class CustomersInviteServiceTest {
 
     private List<Customer> customerList;
+    CustomersInviteService customersInviteService;
+    FileStorageService fileStorageService;
+    Path path;
+    private List<Object> objectList;
 
     @Before
-    public void setUp() throws Exception {
-        customerList = new ArrayList<>();
-        Path path = FileSystems.getDefault().getPath("src\\main\\resources\\customers.txt").toAbsolutePath();
-        List list = Files.readAllLines(path);
-        Customer customer = null;
-        ObjectMapper mapper = new ObjectMapper();
-        for (Object data : list) {
-            JsonNode jsonNode = mapper.readTree((String) data);
-            customer = new Customer(jsonNode.get("name").asText(), jsonNode.get("user_id").asInt(), jsonNode.get("latitude").asDouble(), jsonNode.get("longitude").asDouble());
-            customerList.add(customer);
-        }
-        log.info(String.valueOf(customerList));
+    public void setUp() {
+        fileStorageService = Mockito.mock(FileStorageService.class);
+        customersInviteService = new CustomersInviteService(fileStorageService);
+        objectList = new ArrayList<>();
+        objectList.add("{\"latitude\": \"54.080556\", \"user_id\": 23, \"name\": \"Eoin Gallagher\", \"longitude\": \"-6.361944\"}");
+        objectList.add("{\"latitude\": \"52.986375\", \"user_id\": 12, \"name\": \"Christina McArdle\", \"longitude\": \"-6.043701\"}");
+        objectList.add("{\"latitude\": \"51.92893\", \"user_id\": 1, \"name\": \"Alice Cahill\", \"longitude\": \"-10.27699\"}");
     }
 
     @Test
-    public void numberOfInvitedCustomersBetweenZeroAndOneHundredKm() {
-        CustomersInviteService inviteClosestCustomers = new CustomersInviteService();
-        Assert.assertEquals(16, inviteClosestCustomers.numberOfInvitedCustomersBetweenZeroAndOneHundredKm(customerList));
+    public void testIfDataWereConvertedToCustomer() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+        Assert.assertTrue("Test if data were converted to Customer", customerList.get(0) instanceof Customer);
     }
+
+    @Test
+    public void testIfListRetrievedIsNoNull() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+        Assert.assertNotNull("Test if Customer list is not null", customerList);
+    }
+
+    @Test
+    public void testIfListIsNotEmpty() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+        Assert.assertFalse("Test if data were converted to Customer", customerList.isEmpty());
+    }
+
+    @Test(expected = LogicExeption.class)
+    public void testIfFormatDataIsIncorrect() {
+        objectList.add("{\"la\": \"54.080556\", \"user_id\": 23, \"names\": \"Eoin Gallagher\", \"longitudefs\": \"-6.361944\"}");
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+    }
+
+    @Test
+    public void testIfObjectListFromFileIsEmpty() {
+        objectList = new ArrayList<>();
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+        Assert.assertTrue("Test if object list from file is empty", customerList.isEmpty());
+    }
+
+    @Test
+    public void testIfCustomerListHasTheCorrectData() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
+        Assert.assertEquals("Test if customer list has the correct data", 3, customerList.size());
+    }
+
+    @Test
+    public void testIfCustomerWithinTargetDistanceIsCorrect() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getCustomersListToInvite(path);
+        Assert.assertEquals("Test if customer quantity to be invited is correct", 2, customerList.size());
+    }
+
+    @Test
+    public void testIfDistanceDataExist() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getCustomersListToInvite(path);
+        Assert.assertEquals("Test if customer distance was defined", 42, Math.round(customerList.get(0).getTargetDistance()));
+    }
+
+    @Test
+    public void testIfUserIdWasSorted() {
+        Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
+        customerList = customersInviteService.getCustomersListToInvite(path);
+        Assert.assertEquals("Test if user id was sorted id 12", 12, customerList.get(0).getUserId().intValue());
+        Assert.assertEquals("Test if user id was sorted id 23", 23, customerList.get(1).getUserId().intValue());
+    }
+
 }

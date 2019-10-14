@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Specification Envite Customers
-  description: 'Specification to consume the API to envite any customers within 100km of Dublin office'
+  description: 'Specification to consume the API to invite any customers within 100km of Dublin office'
   contact:
     email: cleisommais@gmail.com
   license:
@@ -9,7 +9,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 paths:
-  /invite:
+  /customers:
     get:
       summary: Get all Customers possibles within 100km of Dublin office    
       responses:
@@ -35,7 +35,7 @@ components:
         name:
           type: string
   securitySchemes:
-    petstore_auth:
+    auth:
       type: oauth2
       flows:
         authorizationCode:
