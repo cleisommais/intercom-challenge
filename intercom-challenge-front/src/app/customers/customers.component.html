@@ -1,34 +1,30 @@
 <div class="container mat-elevation-z8">
+
+  <div class="file-field top" >
+    <h2 mat-line>Intercom Challenge</h2>
+    <p>Accepts any file extension format as long as the content is in JSON format.</p>
+    <p>Choose the file and click on the button to retrieve the list.</p>
+  </div>
+
   <div class="loading-shade" *ngIf="isLoadingResults">
     <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
   </div>
 
-<!--  <div *ngIf="uploadResponse.status === 'error'">
-    {{ uploadResponse.message }}
-  </div>
-  <div *ngIf="uploadResponse.status === 'progress'">
-    <div role="progressbar" [style.width.%]="uploadResponse.message" aria-valuenow="25" aria-valuemin="0"
-         aria-valuemax="100">
-      {{uploadResponse.message}}%
-    </div>
-  </div>-->
   <div class="file-field">
-    <form [formGroup]="form" (ngSubmit)="onFormSubmit(form.value)" enctype="multipart/form-data">
-      <mat-form-field class="full-width">
-        <input type="file" placeholder="Upload the file" formControlName="file" (change)="onFileChange($event)"/>
+    <form [formGroup]="uploadForm" (ngSubmit)="onFormSubmit(uploadForm.value)" >
+        <input type="file" id="fileToSend" name="fileToSend" placeholder="Upload the file" (change)="onFileChange($event.target.files)"/>
         <mat-error>
-          <span *ngIf="!form.get('file').valid && form.get('file').touched">Please upload the file</span>
+          <span *ngIf="!uploadForm.get('fileToSend').valid && uploadForm.get('fileToSend').touched">Please upload the file</span>
         </mat-error>
-      </mat-form-field>
       <div class="button-row">
-        <button type="submit" [disabled]="!form.valid" mat-flat-button color="primary">
+        <button type="submit" [disabled]="!uploadForm.valid" mat-flat-button color="primary">
           <mat-icon>cloud_upload</mat-icon>
         </button>
       </div>
     </form>
   </div>
 
-  <div class="mat-elevation-z8">
+  <div class="mat-elevation-z8"  *ngIf="uploadForm.valid" >
     <table mat-table [dataSource]="dataSource" matSort class="table">
       <!-- Customers Id Column -->
       <ng-container matColumnDef="userId">

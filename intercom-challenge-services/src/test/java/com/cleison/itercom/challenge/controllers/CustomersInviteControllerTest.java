@@ -1,8 +1,10 @@
 package com.cleison.itercom.challenge.controllers;
 
 import com.cleison.itercom.challenge.domains.Customer;
+import com.cleison.itercom.challenge.exeptions.FileStorageException;
 import com.cleison.itercom.challenge.services.CustomersInviteService;
 import com.cleison.itercom.challenge.services.FileStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +29,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -74,9 +78,27 @@ public class CustomersInviteControllerTest {
     public void testIfFileListIsEmpty() throws Exception{
         path = FileSystems.getDefault().getPath("src\\main\\resources\\customers_empty.txt").toAbsolutePath();
         InputStream inputStream = Files.newInputStream(path);
-        multipartFile = new MockMultipartFile("file", "customers.txt", "text/plain", inputStream);
+        multipartFile = new MockMultipartFile("file", "customer_empty.txt", "text/plain", inputStream);
         String result = getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();
-        Assert.assertTrue(result.isEmpty());
+        System.out.println(getMvcResult(TEST_END_POINT).andReturn());
+        Assert.assertTrue("Test if list is empty when file content is empty", "[]".equals(result));
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void testIfFilePathIsIncorrect() throws Exception{
+        path = FileSystems.getDefault().getPath("src\\main\\resources\\file.txt").toAbsolutePath();
+        InputStream inputStream = Files.newInputStream(path);
+        multipartFile = new MockMultipartFile("file", "customer_empty.txt", "text/plain", inputStream);
+        getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    public void testIfListObjectReturnIsCorrect() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String result = getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();
+        customerList = new ArrayList<>();
+        customerList = Arrays.asList(mapper.readValue(result, Customer[].class));
+        Assert.assertEquals("Test if list customer has correct list size", 16, customerList.size());
     }
 
     @Test

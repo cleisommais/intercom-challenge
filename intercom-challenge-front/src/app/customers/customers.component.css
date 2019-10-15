@@ -2,6 +2,16 @@
 .container {
   position: relative;
   padding: 5px;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.container .top {
+  margin-bottom: 10px;
+}
+
+.container .top h2 {
+  text-align: center;
 }
 .table-container {
   position: relative;
@@ -38,9 +48,6 @@ table {
 }
 .mat-flat-button {
   margin: 5px;
-}
-.mat-row{
-  cursor: pointer;
 }
 .mat-row:hover{
   background-color: dimgray;

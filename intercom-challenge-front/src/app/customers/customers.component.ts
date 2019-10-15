@@ -18,7 +18,7 @@ export class CustomersComponent implements OnInit {
   @ViewChild(MatSort, {static: false}) sort: MatSort;
   @Output() progress = new EventEmitter();
 
-  form: FormGroup;
+  uploadForm: FormGroup;
   displayedColumns: string[] = ['userId', 'name', 'targetDistance'];
   data: Customer[] = [];
   dataSource: MatTableDataSource<Customer> = new MatTableDataSource<Customer>(this.data);
@@ -28,14 +28,17 @@ export class CustomersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.form = this.formBuilder.group({
-      file: [null, Validators.required]
+    this.isLoadingResults = false;
+    this.uploadForm = this.formBuilder.group({
+      fileToSend: [null, Validators.required]
     });
   }
 
   onFormSubmit(form: NgForm) {
     this.isLoadingResults = true;
-    this.api.getCustomer(form).subscribe(
+    const formData = new FormData();
+    formData.append('file', this.uploadForm.get('fileToSend').value);
+    this.api.getCustomer(formData).subscribe(
       res => {
         this.data = res.slice();
         this.dataSource = new MatTableDataSource<Customer>(this.data);
@@ -51,11 +54,8 @@ export class CustomersComponent implements OnInit {
     );
   }
 
-  onFileChange(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.form.get('file').setValue(file);
-    }
+  onFileChange(files: FileList) {
+    this.uploadForm.get('fileToSend').setValue(files.item(0));
   }
 
   openSnackBar(message: any, action: string) {
