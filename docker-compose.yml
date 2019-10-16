@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+#Backend service Java 12
+  microservice-back-end-customer:
+    container_name: intercom-challenge-services
+    build:
+      context: ./intercom-challenge-services
+      args:
+        buildno: 1
+    image: intercom-challenge-services:latest
+    ports:
+      - '8080:8080'   
+    networks:
+      - network
+#Frontend Angular 8
+  front-end-customer:
+    container_name: intercom-challenge-front
+    build:
+      context: ./intercom-challenge-front
+      args:
+        buildno: 1
+    image: intercom-challenge-front:latest
+    ports:
+      - '80:80'
+    links:
+      - microservice-back-end-customer          
+    networks:
+      - network    
+networks:
+  network:
+    driver: bridge          
