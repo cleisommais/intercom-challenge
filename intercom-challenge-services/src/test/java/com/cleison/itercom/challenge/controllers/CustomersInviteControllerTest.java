@@ -63,7 +63,7 @@ public class CustomersInviteControllerTest {
         customer.setUserId(12);
         customer.setTargetDistance(99.0);
         customerList.add(customer);
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers.txt").toAbsolutePath();
         InputStream inputStream = Files.newInputStream(path);
         multipartFile = new MockMultipartFile("file", "customers.txt", "text/plain", inputStream);
     }
@@ -76,7 +76,7 @@ public class CustomersInviteControllerTest {
 
     @Test
     public void testIfFileListIsEmpty() throws Exception{
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers_empty.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers_empty.txt").toAbsolutePath();
         InputStream inputStream = Files.newInputStream(path);
         multipartFile = new MockMultipartFile("file", "customer_empty.txt", "text/plain", inputStream);
         String result = getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();
@@ -86,7 +86,7 @@ public class CustomersInviteControllerTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testIfFilePathIsIncorrect() throws Exception{
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\file.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/file.txt").toAbsolutePath();
         InputStream inputStream = Files.newInputStream(path);
         multipartFile = new MockMultipartFile("file", "customer_empty.txt", "text/plain", inputStream);
         getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();

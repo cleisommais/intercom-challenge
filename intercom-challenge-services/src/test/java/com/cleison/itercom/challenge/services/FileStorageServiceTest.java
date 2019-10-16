@@ -23,7 +23,7 @@ public class FileStorageServiceTest {
 
     @Test
     public void testListRetrievedData() {
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers.txt").toAbsolutePath();
         list = fileStorageService.getDataFromFile(path);
         Assert.assertNotNull("", list);
         Assert.assertEquals("Test if list retrieved 32 items", 32, list.size());
@@ -31,7 +31,7 @@ public class FileStorageServiceTest {
 
     @Test
     public void testListIsNotNull() {
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers.txt").toAbsolutePath();
         list = fileStorageService.getDataFromFile(path);
         Assert.assertNotNull("Test if list retrieved is not null", list);
     }
@@ -43,19 +43,19 @@ public class FileStorageServiceTest {
 
     @Test(expected = MyFileNotFoundException.class)
     public void testWhenFileDoesNotExist() {
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers.json").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers.json").toAbsolutePath();
         list = fileStorageService.getDataFromFile(path);
     }
 
     @Test(expected = MyFileNotFoundException.class)
     public void testWhenDirectoryDoesNotExist() {
-        path = FileSystems.getDefault().getPath("src\\main\\resource\\customers.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resource/customers.txt").toAbsolutePath();
         list = fileStorageService.getDataFromFile(path);
     }
 
     @Test
     public void testListIsEmpty() throws IllegalArgumentException {
-        path = FileSystems.getDefault().getPath("src\\main\\resources\\customers_empty.txt").toAbsolutePath();
+        path = FileSystems.getDefault().getPath("src/main/resources/customers_empty.txt").toAbsolutePath();
         list = fileStorageService.getDataFromFile(path);
         Assert.assertEquals("Test if list retrieved is empty", true, list.isEmpty());
     }
