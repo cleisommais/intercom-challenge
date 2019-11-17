@@ -35,11 +35,11 @@ public class CustomersInviteController {
         List<Customer> list = null;
         try {
             list = customersInviteService.getCustomersListToInvite(path);
-            if (list == null && list.isEmpty())
-                return new ResponseEntity<>("Empty list!", HttpStatus.OK);
+            if (list != null && !list.isEmpty())
+                return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (LogicExeption e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>("Empty list!", HttpStatus.OK);
     }
 }

@@ -5,7 +5,7 @@ import {MatSort} from '@angular/material/sort';
 import {Customer} from '../model/customer';
 import {CustomerService} from '../customer-service/customer.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import {FormBuilder, FormGroup, NgForm, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-customers',
@@ -16,7 +16,6 @@ export class CustomersComponent implements OnInit {
 
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @Output() progress = new EventEmitter();
 
   uploadForm: FormGroup;
   displayedColumns: string[] = ['userId', 'name', 'targetDistance'];
@@ -34,6 +33,10 @@ export class CustomersComponent implements OnInit {
     });
   }
 
+  cleanDataGrid() {
+    this.dataSource = new MatTableDataSource<Customer>(null);
+  }
+
   onFormSubmit(form: NgForm) {
     this.isLoadingResults = true;
     const formData = new FormData();
@@ -47,7 +50,7 @@ export class CustomersComponent implements OnInit {
         this.dataSource.sort = this.sort;
       },
       err => {
-        console.log(err);
+        this.cleanDataGrid();
         this.isLoadingResults = false;
         this.openSnackBar(err.error, 'Error');
       }

@@ -1,7 +1,6 @@
 package com.cleison.itercom.challenge.services;
 
 import com.cleison.itercom.challenge.domains.Customer;
-import com.cleison.itercom.challenge.exeptions.LogicExeption;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,35 +30,35 @@ public class CustomersInviteServiceTest {
     }
 
     @Test
-    public void testIfDataWereConvertedToCustomer() throws IOException, NullPointerException {
+	public void testIfDataWereConvertedToCustomer() throws IOException {
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
         Assert.assertTrue("Test if data were converted to Customer", customerList.get(0) instanceof Customer);
     }
 
     @Test
-    public void testIfListRetrievedIsNoNull() throws IOException, NullPointerException{
+	public void testIfListRetrievedIsNoNull() throws IOException {
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
         Assert.assertNotNull("Test if Customer list is not null", customerList);
     }
 
     @Test
-    public void testIfListIsNotEmpty() throws IOException, NullPointerException{
+	public void testIfListIsNotEmpty() throws IOException {
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
         Assert.assertFalse("Test if data were converted to Customer", customerList.isEmpty());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testIfFormatDataIsIncorrect() throws IOException, NullPointerException {
+	@Test(expected = IllegalArgumentException.class)
+	public void testIfFormatDataIsIncorrect() throws IOException {
         objectList.add("{\"la\": \"54.080556\", \"user_id\": 23, \"names\": \"Eoin Gallagher\", \"longitudefs\": \"-6.361944\"}");
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
     }
 
     @Test
-    public void testIfObjectListFromFileIsEmpty() throws IOException, NullPointerException {
+	public void testIfObjectListFromFileIsEmpty() throws IOException {
         objectList = new ArrayList<>();
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
@@ -67,7 +66,7 @@ public class CustomersInviteServiceTest {
     }
 
     @Test
-    public void testIfCustomerListHasTheCorrectData() throws IOException, NullPointerException {
+	public void testIfCustomerListHasTheCorrectData() throws IOException {
         Mockito.when(fileStorageService.getDataFromFile(path)).thenReturn(objectList);
         customerList = customersInviteService.getListFromFileAndTransformToCustomersList(path);
         Assert.assertEquals("Test if customer list has the correct data", 3, customerList.size());

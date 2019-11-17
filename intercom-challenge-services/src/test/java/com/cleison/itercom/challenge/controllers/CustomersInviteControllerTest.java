@@ -80,8 +80,7 @@ public class CustomersInviteControllerTest {
         InputStream inputStream = Files.newInputStream(path);
         multipartFile = new MockMultipartFile("file", "customer_empty.txt", "text/plain", inputStream);
         String result = getMvcResult(TEST_END_POINT).andReturn().getResponse().getContentAsString();
-        System.out.println(getMvcResult(TEST_END_POINT).andReturn());
-        Assert.assertTrue("Test if list is empty when file content is empty", "[]".equals(result));
+        Assert.assertTrue("Test if list is empty when file content is empty", "Empty list!".equals(result));
     }
 
     @Test(expected = NoSuchFileException.class)

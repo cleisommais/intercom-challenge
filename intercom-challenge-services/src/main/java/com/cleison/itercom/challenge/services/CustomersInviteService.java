@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,15 +33,19 @@ public class CustomersInviteService {
      * @param path
      * @return
      */
-    public List<Customer> getListFromFileAndTransformToCustomersList(Path path) throws IOException, NullPointerException {
+	public List<Customer> getListFromFileAndTransformToCustomersList(Path path) throws IOException {
         List<Customer> customerList = new ArrayList<>();
         Customer customer = null;
         ObjectMapper mapper = new ObjectMapper();
         for (Object data : fileStorageService.getDataFromFile(path)) {
             JsonNode jsonNode = null;
             jsonNode = mapper.readTree((String) data);
-            customer = new Customer(jsonNode.get("name").asText(), jsonNode.get("user_id").asInt(), jsonNode.get("latitude").asDouble(), jsonNode.get("longitude").asDouble(), null);
-            customerList.add(customer);
+			if (isJsonCorrectFormat(jsonNode)) {
+				customer = new Customer(jsonNode.get("name").asText(), jsonNode.get("user_id").asInt(), jsonNode.get("latitude").asDouble(), jsonNode.get("longitude").asDouble(), null);
+				customerList.add(customer);
+			} else {
+				throw new IllegalArgumentException();
+			}
         }
         return customerList;
     }
@@ -63,14 +66,11 @@ public class CustomersInviteService {
                     customerList.add(customer);
             }
             Collections.sort(customerList, Comparator.comparing(Customer::getUserId));
-        } catch (JsonParseException e) {
-            throw new LogicExeption("Error when try build the reflexion between object list file to object Customer, probably the data format is incorrect!", e);
-        } catch (NullPointerException e) {
-            throw new LogicExeption(e.getMessage(), e);
+		} catch (JsonParseException | IllegalArgumentException e) {
+            throw new LogicExeption("The data format is incorrect!", e);
         } catch (IOException e) {
             throw new LogicExeption(e.getMessage(), e);
         }
-
         return customerList;
     }
 
@@ -97,4 +97,19 @@ public class CustomersInviteService {
                     Math.cos(endLongInRadios - startLongInRadios));
         return distanceBetweenAandBInKm;
     }
+
+	/**
+	 * Check if each line read has the correct format
+	 * @param jsonNode
+	 * @return
+	 */
+	private boolean isJsonCorrectFormat(JsonNode jsonNode) {
+		if (jsonNode.findValues("name").isEmpty() ||
+			jsonNode.findValues("user_id").isEmpty() ||
+			jsonNode.findValues("latitude").isEmpty() ||
+			jsonNode.findValues("longitude").isEmpty()) {
+			return false;
+		}
+		return true;
+	}
 }
