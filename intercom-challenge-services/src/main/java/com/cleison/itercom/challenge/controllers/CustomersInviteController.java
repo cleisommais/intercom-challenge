@@ -1,6 +1,7 @@
 package com.cleison.itercom.challenge.controllers;
 
 import com.cleison.itercom.challenge.domains.Customer;
+import com.cleison.itercom.challenge.exeptions.LogicExeption;
 import com.cleison.itercom.challenge.services.CustomersInviteService;
 import com.cleison.itercom.challenge.services.FileStorageService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,8 @@ public class CustomersInviteController {
             list = customersInviteService.getCustomersListToInvite(path);
             if (list == null && list.isEmpty())
                 return new ResponseEntity<>("Empty list!", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (LogicExeption e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }

@@ -2,11 +2,14 @@ package com.cleison.itercom.challenge.services;
 
 import com.cleison.itercom.challenge.domains.Customer;
 import com.cleison.itercom.challenge.exeptions.LogicExeption;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,19 +34,15 @@ public class CustomersInviteService {
      * @param path
      * @return
      */
-    public List<Customer> getListFromFileAndTransformToCustomersList(Path path) {
+    public List<Customer> getListFromFileAndTransformToCustomersList(Path path) throws IOException, NullPointerException {
         List<Customer> customerList = new ArrayList<>();
         Customer customer = null;
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            for (Object data : fileStorageService.getDataFromFile(path)) {
-                JsonNode jsonNode = null;
-                jsonNode = mapper.readTree((String) data);
-                customer = new Customer(jsonNode.get("name").asText(), jsonNode.get("user_id").asInt(), jsonNode.get("latitude").asDouble(), jsonNode.get("longitude").asDouble(), null);
-                customerList.add(customer);
-            }
-        } catch (Exception e) {
-            throw new LogicExeption("Error when try build the reflexion between object list file to object Customer, probably the data format is incorrect!", e);
+        for (Object data : fileStorageService.getDataFromFile(path)) {
+            JsonNode jsonNode = null;
+            jsonNode = mapper.readTree((String) data);
+            customer = new Customer(jsonNode.get("name").asText(), jsonNode.get("user_id").asInt(), jsonNode.get("latitude").asDouble(), jsonNode.get("longitude").asDouble(), null);
+            customerList.add(customer);
         }
         return customerList;
     }
@@ -64,9 +63,14 @@ public class CustomersInviteService {
                     customerList.add(customer);
             }
             Collections.sort(customerList, Comparator.comparing(Customer::getUserId));
-        } catch (Exception e) {
-            throw new LogicExeption("Error when try set target distance more than " + DISTANCE_TARGET_IN_KM + ".", e);
+        } catch (JsonParseException e) {
+            throw new LogicExeption("Error when try build the reflexion between object list file to object Customer, probably the data format is incorrect!", e);
+        } catch (NullPointerException e) {
+            throw new LogicExeption(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new LogicExeption(e.getMessage(), e);
         }
+
         return customerList;
     }
 
@@ -82,19 +86,15 @@ public class CustomersInviteService {
     public double shortestDistanceInKm(double startLati, double startLong, double endLati, double endLong) {
         //degrees to radius
         double distanceBetweenAandBInKm = 0;
-        try {
-            double startLatiInRadios = Math.toRadians(startLati);
-            double startLongInRadios = Math.toRadians(startLong);
-            double endLatiInRadios = Math.toRadians(endLati);
-            double endLongInRadios = Math.toRadians(endLong);
-            //Distance, d = EARTH_RADIUS_IN_KM * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
-            distanceBetweenAandBInKm = EARTH_RADIUS_IN_KM * Math.acos(
-                    Math.sin(startLatiInRadios) * Math.sin(endLatiInRadios) +
-                            Math.cos(startLatiInRadios) * Math.cos(endLatiInRadios) *
-                                    Math.cos(endLongInRadios - startLongInRadios));
-        } catch (Exception e) {
-            throw new LogicExeption("Error when try calculate the shortest distance between two places.", e);
-        }
+        double startLatiInRadios = Math.toRadians(startLati);
+        double startLongInRadios = Math.toRadians(startLong);
+        double endLatiInRadios = Math.toRadians(endLati);
+        double endLongInRadios = Math.toRadians(endLong);
+        //Distance, d = EARTH_RADIUS_IN_KM * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
+        distanceBetweenAandBInKm = EARTH_RADIUS_IN_KM * Math.acos(
+            Math.sin(startLatiInRadios) * Math.sin(endLatiInRadios) +
+                Math.cos(startLatiInRadios) * Math.cos(endLatiInRadios) *
+                    Math.cos(endLongInRadios - startLongInRadios));
         return distanceBetweenAandBInKm;
     }
 }

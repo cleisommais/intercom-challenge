@@ -49,7 +49,7 @@ export class CustomersComponent implements OnInit {
       err => {
         console.log(err);
         this.isLoadingResults = false;
-        this.openSnackBar(err.message, 'Error');
+        this.openSnackBar(err.error, 'Error');
       }
     );
   }
