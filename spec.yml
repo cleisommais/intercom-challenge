@@ -1,0 +1,65 @@
+openapi: 3.0.1
+info:
+  title: Specification Envite Customers
+  description: 'Specification to consume the API to invite any customers within 100km of Dublin office'
+  contact:
+    email: cleisommais@gmail.com
+  version: 1.0.0
+paths:
+  /customers:
+    post:
+      summary: Get all Customers possibles within 100km of Dublin office    
+      requestBody:
+        description: 
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  example: file
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfCustomers'            
+        400:
+          description: Bad request
+          content:  
+            text/plain:
+              schema:
+                type: string
+                example: "The data format is incorrect!"                      
+components:
+  schemas:
+    ArrayOfCustomers:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          userId:
+            type: integer
+          latitude:
+            type: number
+          longitude:
+            type: number
+          targetDistance:
+            type: number
+      example:
+        - name: Ian Kehoe
+          userId: 1
+          latitude: 53.2451022   
+          longitude: -6.238335 
+          targetDistance: 10.457613454047323   
+        - name: Nora Dempsey
+          userId: 5
+          latitude: 53.1302756  
+          longitude:  -6.2397222 
+          targetDistance:  23.1848516613069            
